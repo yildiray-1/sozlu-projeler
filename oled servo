@@ -1,3 +1,4 @@
+#Bu kod distance sensörden aldığı değeri oled ile yazdırır ve 8 cm'den düşükse servo motoru döndürür yani açılıp kapanan bir kapı gibi
 from machine import Pin, I2C
 import ssd1306
 from hcsr04 import HCSR04
