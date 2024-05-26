@@ -1,0 +1,19 @@
+from machine import Pin
+from time import sleep
+
+# GPIO pinlerini belirleyin
+led_pins = [5, 18, 19,23]
+
+# LED pinlerini çıkış olarak ayarlayın
+leds = [Pin(pin, Pin.OUT) for pin in led_pins]
+
+def sequential_blink(leds, delay):
+    while True:
+        for led in leds:
+            led.on()
+            sleep(delay)
+            led.off()
+
+# LED'lerin sırasıyla yanıp sönmesi için fonksiyonu çağırın
+sequential_blink(leds, 0.1)  # Her LED'in yarım saniye yanmasını sağlar
+
