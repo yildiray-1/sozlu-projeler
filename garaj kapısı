@@ -1,0 +1,60 @@
+from machine import Pin, I2C, PWM
+import ssd1306
+from hcsr04 import HCSR04
+from time import sleep
+
+# ESP32 Pin assignment 
+i2c = I2C(scl=Pin(22), sda=Pin(21))
+sensor = HCSR04(trigger_pin=5, echo_pin=18, echo_timeout_us=10000)
+
+# Servo motor Pin assignment
+servo_pin = Pin(2)
+servo = PWM(servo_pin, freq=50)
+
+# LED Pin assignment
+led_pin = Pin(19, Pin.OUT)  # Use GPIO 19 for the LED
+
+# OLED display configuration
+oled_width = 128
+oled_height = 64
+oled = ssd1306.SSD1306_I2C(oled_width, oled_height, i2c)
+
+# Function to move the servo
+def set_servo_angle(servo, angle):
+    duty = 40 + int((angle / 180) * 115)
+    servo.duty(duty)
+
+while True:
+    oled.fill(0)
+    distance = sensor.distance_cm()
+    print('Distance:', distance, 'cm')
+    oled.text("Distance (cm)", 0, 15)
+    oled.text(" uzaklik", 0, 5)
+    oled.text(str(distance), 0, 35)
+    oled.show()
+
+    # Check distance and control servo motor and LED
+    if distance < 8:
+        set_servo_angle(servo, 115)  # Move servo to 90 degrees
+        # Blink LED until the distance is greater than 8 cm
+        while distance < 8:
+            if distance < 5:
+                # Fast blinking for distance < 5 cm
+                led_pin.value(1)  # Turn on the LED
+                sleep(0.1)        # Delay for 100ms
+                led_pin.value(0)  # Turn off the LED
+                sleep(0.1)        # Delay for 100ms
+            else:
+                # Normal blinking for distance < 8 cm but >= 5 cm
+                led_pin.value(1)  # Turn on the LED
+                sleep(0.3)        # Delay for 300ms
+                led_pin.value(0)  # Turn off the LED
+                sleep(0.3)        # Delay for 300ms
+            distance = sensor.distance_cm()  # Update distance
+            print('Distance:', distance, 'cm')
+    else:
+        set_servo_angle(servo, 0)  # Move servo to 0 degrees
+        led_pin.value(0)  # Ensure LED is off when distance is 8 cm or more
+
+    sleep(0.2)
+
