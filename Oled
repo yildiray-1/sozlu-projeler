@@ -12,7 +12,7 @@ oled_width = 128
 oled_height = 64
 oled = ssd1306.SSD1306_I2C(oled_width, oled_height, i2c)
 
-oled.text('Arkadaslar!', 0, 0)
+oled.text('Hocam', 0, 0)
 oled.text('Burada sonuclar ', 0, 10)
 oled.text('gosterilebilir!', 0, 20)
         
